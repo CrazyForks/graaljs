@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, 2021, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021, 2026, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * The Universal Permissive License (UPL), Version 1.0
@@ -40,6 +40,7 @@
  */
 package com.oracle.truffle.js.runtime.interop;
 
+import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.interop.StopIterationException;
 import com.oracle.truffle.api.interop.TruffleObject;
@@ -47,18 +48,22 @@ import com.oracle.truffle.api.interop.UnsupportedMessageException;
 import com.oracle.truffle.api.library.CachedLibrary;
 import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
+import com.oracle.truffle.api.strings.TruffleString;
+import com.oracle.truffle.js.runtime.Strings;
 
 @ExportLibrary(InteropLibrary.class)
 public final class InteropArrayIndexIterator implements TruffleObject {
     final Object array;
     private long cursor;
+    private final boolean convertToString;
 
-    private InteropArrayIndexIterator(Object array) {
+    private InteropArrayIndexIterator(Object array, boolean convertToString) {
         this.array = array;
+        this.convertToString = convertToString;
     }
 
-    public static InteropArrayIndexIterator create(Object array) {
-        return new InteropArrayIndexIterator(array);
+    public static InteropArrayIndexIterator create(Object array, boolean convertToString) {
+        return new InteropArrayIndexIterator(array, convertToString);
     }
 
     @SuppressWarnings("static-method")
@@ -80,9 +85,14 @@ public final class InteropArrayIndexIterator implements TruffleObject {
 
     @ExportMessage
     Object getIteratorNextElement(
+                    @Cached TruffleString.FromLongNode stringFromLong,
                     @CachedLibrary("this.array") InteropLibrary interop) throws StopIterationException {
         if (hasIteratorNextElement(interop)) {
-            return cursor++;
+            if (convertToString) {
+                return Strings.fromLong(stringFromLong, cursor++);
+            } else {
+                return cursor++;
+            }
         } else {
             throw StopIterationException.create();
         }
