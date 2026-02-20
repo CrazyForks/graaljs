@@ -245,7 +245,7 @@ public class TestV8Runnable extends TestRunnable {
     private TestFile.Result runInJVM(int ecmaVersion, File file, boolean negative, boolean shouldThrow, boolean module, Map<String, String> extraOptions, List<String> setupFiles) {
         boolean replaceGCBuiltin = shouldReplaceGCBuiltin(file);
         Source[] prequelSources = loadHarnessSources(ecmaVersion);
-        Source[] sources = Arrays.copyOf(prequelSources, prequelSources.length + 2 + (replaceGCBuiltin ? 1 : 0) + setupFiles.size());
+        Source[] sources = Arrays.copyOf(prequelSources, prequelSources.length + 1 + (replaceGCBuiltin ? 1 : 0) + setupFiles.size());
         int sourceIdx = prequelSources.length;
         try {
             for (String setupFile : setupFiles) {
@@ -258,7 +258,6 @@ public class TestV8Runnable extends TestRunnable {
         if (replaceGCBuiltin) {
             sources[sourceIdx++] = GC_NOOP_SOURCE;
         }
-        sources[sourceIdx++] = Source.newBuilder(JavaScriptLanguage.ID, createTestFileNamePrefix(file), "").buildLiteral();
         assert sourceIdx == sources.length;
 
         TestCallable tc = new TestCallable(suite, sources, toSource(file, module), file, ecmaVersion, extraOptions);
@@ -289,15 +288,13 @@ public class TestV8Runnable extends TestRunnable {
 
     private TestFile.Result runExtLauncher(int ecmaVersion, File file, boolean negative, boolean shouldThrow, boolean module, Map<String, String> extraOptions, List<String> setupFiles) {
         Source[] prequelSources = loadHarnessSources(ecmaVersion);
-        List<String> args = new ArrayList<>(prequelSources.length + (module ? 5 : 4));
+        List<String> args = new ArrayList<>(prequelSources.length + setupFiles.size() + (module ? 3 : 2));
         for (Source prequelSrc : prequelSources) {
             args.add(prequelSrc.getPath());
         }
         for (String setupFile : setupFiles) {
             args.add(setupFile);
         }
-        args.add("--eval");
-        args.add(createTestFileNamePrefix(file));
         args.add(((TestV8) suite).getMockupSource().getPath());
         if (module) {
             args.add("--module");
@@ -328,10 +325,6 @@ public class TestV8Runnable extends TestRunnable {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private static String createTestFileNamePrefix(File file) {
-        return "TEST_FILE_NAME = \"" + file.getPath().replaceAll("\\\\", "\\\\\\\\") + "\"";
     }
 
     private void printScript(String scriptCode) {
