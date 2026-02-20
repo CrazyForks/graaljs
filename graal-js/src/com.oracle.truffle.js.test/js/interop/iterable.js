@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, 2021, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021, 2026, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
@@ -54,7 +54,7 @@ function assertIterableEquals(expected, actual) {
 assertIterableEquals(expected, iterable);
 assertIterableEquals(expected, [...iterable]);
 assertIterableEquals(expected, forOf(iterable));
-assertIterableEquals(expected.map((v, i) => i), forIn(iterable));
+assertIterableEquals(expected.map((v, i) => String(i)), forIn(iterable));
 assertIterableEquals(expected, Array.from(iterable));
 assertIterableEquals(expected, new Set(iterable));
 
