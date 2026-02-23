@@ -173,6 +173,14 @@
     "status" : "SKIP",
     "comment" : "passing this test, except V8HasFast..., V8HaveSameMap, V8GetOptimizationCount, V8GetOptimizationStatus, etc."
   }, {
+    "filePath" : "mjsunit/array-tostring-stack-overflow.js",
+    "status" : "PASS",
+    "statusOverrides" : {
+      "SVM" : "SKIP"
+    },
+    "runInIsolation" : true,
+    "comment" : "GR-73546: Excepted stack overflow may not happen on SVM depending on the stack size"
+  }, {
     "filePath" : "mjsunit/asm/asm-heap.js",
     "runInIsolation" : true,
     "comment" : "test with (expected) high memory usage that might influence other tests"
