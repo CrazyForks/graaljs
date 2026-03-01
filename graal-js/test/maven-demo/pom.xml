@@ -151,6 +151,13 @@
                                             <overWrite>true</overWrite>
                                         </artifactItem>
                                         <artifactItem>
+                                            <groupId>org.graalvm.compiler</groupId>
+                                            <artifactId>options</artifactId>
+                                            <version>${graalvm.version}</version>
+                                            <type>jar</type>
+                                            <overWrite>true</overWrite>
+                                        </artifactItem>
+                                        <artifactItem>
                                             <groupId>org.graalvm.truffle</groupId>
                                             <artifactId>truffle-api</artifactId>
                                             <version>${graalvm.version}</version>
